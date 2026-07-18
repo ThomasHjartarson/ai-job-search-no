@@ -69,6 +69,10 @@ seniority, employment type, job function, industries, and apply link.
 
 ```bash
 # Data engineer roles in Bengaluru, last 30 days
+bun run .agents/skills/linkedin-search/cli/src/cli.ts search -q "utvikler" -l "Oslo, Norway" --jobage 14 --format table
+```
+
+```bash
 bun run .agents/skills/linkedin-search/cli/src/cli.ts search -q "data engineer" -l "Bengaluru, Karnataka, India" --jobage 30 --format table
 
 # Product manager roles in Berlin, remote

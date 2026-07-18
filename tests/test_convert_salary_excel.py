@@ -38,7 +38,7 @@ class DetectColumnTypeTests(unittest.TestCase):
         self.assertEqual(detect_column_type("Engineering"), None)
 
     def test_count_headers_still_match_common_labels(self):
-        for header in ("Count", "Engineering Count", "Antal medarbejdere"):
+        for header in ("Count", "Engineering Count", "Antall medarbeidere"):
             with self.subTest(header=header):
                 self.assertEqual(detect_column_type(header), "count")
 
@@ -50,8 +50,8 @@ class DetectColumnTypeTests(unittest.TestCase):
         self.assertEqual(detect_column_type("Lønindeks"), "index")
 
     def test_compound_patterns_match_as_substring_but_others_do_not(self):
-        # A compound token (Danish "løn") matches inside a glued header word.
-        self.assertTrue(header_matches("lønindeks", INDEX_PATTERNS))
+        # A compound token (Norwegian "lønn") matches inside a glued header word.
+        self.assertTrue(header_matches("lønnsindeks", INDEX_PATTERNS))
         # A pattern that is not a compound token ("salary") only matches as a
         # whole token, so it must not match inside an unrelated glued word.
         self.assertFalse(header_matches("salaryindex", INDEX_PATTERNS))

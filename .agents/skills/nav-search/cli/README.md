@@ -20,7 +20,7 @@ The search page is a Next.js app that streams its data as React Server Component
 (`self.__next_f.push([1,"…"])`). Ad objects straddle chunk boundaries, so `helpers.ts`
 concatenates every chunk, decodes the JS string escapes, then brace-balances JSON objects out of
 the result. No HTML parser and no runtime dependency — the same approach as the
-`linkedin-search` and `jobindex-search` skills.
+`linkedin-search` skill.
 
 ## Three things worth knowing
 

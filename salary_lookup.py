@@ -12,7 +12,7 @@ instructions on the expected format and how to convert from Excel.
 
 Usage:
     python salary_lookup.py "Company Name"
-    python salary_lookup.py "Company Name" --city "København"
+    python salary_lookup.py "Company Name" --city "Oslo"
     python salary_lookup.py "Company Name" --json
     python salary_lookup.py --list-all
 """
@@ -26,20 +26,30 @@ from pathlib import Path
 
 DATA_FILE = Path(__file__).parent / "salary_data.json"
 
-# Common Danish <-> anglicized spelling variants
+# Common Norwegian <-> anglicized spelling variants. Norwegian shares æ/ø/å with
+# Danish, so this set carries over unchanged.
 SPELLING_VARIANTS = {
     "ø": "o", "æ": "ae", "å": "aa",
     "ö": "o", "ä": "ae", "ü": "u",
 }
 
-# Legal suffixes and noise to strip when matching company names
+# Legal suffixes and noise to strip when matching company names. Applied in
+# order, so sub-entities and parentheticals go first and the legal form is then
+# left at the end of the string where it can be anchored.
+#
+# Norwegian company forms: AS (aksjeselskap), ASA (allmennaksjeselskap),
+# ANS/DA (ansvarlig selskap), BA, SA (samvirkeforetak), NUF (foreign branch),
+# KS (kommandittselskap), and the public-sector HF/IKS/KF.
 STRIP_PATTERNS = [
-    r"\ba/s\b", r"\baps\b", r"\bi/s\b", r"\bp/s\b", r"\bk/s\b",
-    r"\bivs\b", r"\bamba\b", r"\ba\.m\.b\.a\.\b",
-    r"\(vg\)", r"\(.*?\)",  # (VG) and other parentheticals
-    r"\bdanmark\b", r"\bdenmark\b", r"\bscandinavia\b", r"\bnordic\b",
+    r",\s*.*$",  # everything after comma (sub-entities, e.g. "Visma AS, avd Oslo")
+    r"\(.*?\)",  # parentheticals
+    # Unambiguous forms: safe to strip anywhere, they are not ordinary words.
+    r"\basa\b", r"\bans\b", r"\bnuf\b", r"\biks\b",
+    # Ambiguous two-letter forms are also ordinary words ("as", "da", "sa"), so
+    # anchor them to the end of the name, which is where a legal form sits.
+    r"\b(as|da|ba|sa|ks|hf|kf)\s*$",
+    r"\bnorge\b", r"\bnorway\b", r"\bscandinavia\b", r"\bnordic\b",
     r"\bgroup\b", r"\bholding\b",
-    r",\s*.*$",  # everything after comma (sub-entities)
 ]
 
 
@@ -171,10 +181,10 @@ def normalize(s):
 
 
 def anglicize(s):
-    """Convert Danish/Nordic characters to anglicized equivalents."""
+    """Convert Norwegian/Nordic characters to anglicized equivalents."""
     s = s.lower()
-    for danish, english in SPELLING_VARIANTS.items():
-        s = s.replace(danish, english)
+    for nordic, english in SPELLING_VARIANTS.items():
+        s = s.replace(nordic, english)
     return s
 
 

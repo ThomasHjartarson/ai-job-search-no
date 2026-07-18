@@ -123,6 +123,10 @@ bun run .agents/skills/freehire-search/cli/src/cli.ts search -q "backend enginee
 bun run .agents/skills/freehire-search/cli/src/cli.ts search -q "react" --remote remote --region eu --format table
 
 # DevOps roles in Germany posted in the last 14 days
+bun run .agents/skills/freehire-search/cli/src/cli.ts search -q "backend" --country NO --jobage 14 --format table
+```
+
+```bash
 bun run .agents/skills/freehire-search/cli/src/cli.ts search --category devops --country DE --jobage 14 --format table
 
 # ML/AI roles anywhere, fully remote

@@ -8,7 +8,7 @@ The salary lookup tool (`salary_lookup.py`) lets you benchmark company salaries 
 
 ## How it works
 
-The tool reads a `salary_data.json` file in the repo root containing company salary benchmarks. It uses fuzzy matching to find companies by name, handling Danish/Nordic characters, legal suffixes (A/S, ApS), and common spelling variations.
+The tool reads a `salary_data.json` file in the repo root containing company salary benchmarks. It uses fuzzy matching to find companies by name, handling Norwegian/Nordic characters, legal suffixes (AS, ASA, ANS), and common spelling variations.
 
 The data format supports any index-based or absolute salary data. For example:
 - Index 100 = median salary, higher is better
@@ -29,7 +29,7 @@ The tool expects `salary_data.json` with this structure:
   },
   "companies": [
     {
-      "company": "Novo Nordisk A/S",
+      "company": "Equinor ASA",
       "city": "Bagsværd",
       "categories": {
         "all_employees": { "count": 500, "index": 108.5 },
@@ -37,7 +37,7 @@ The tool expects `salary_data.json` with this structure:
       }
     },
     {
-      "company": "Ørsted A/S",
+      "company": "Telenor ASA",
       "city": "Fredericia",
       "categories": {
         "all_employees": { "count": 200, "index": 105.2 }
@@ -90,13 +90,13 @@ Start with an empty template and add companies as you research them:
   "metadata": {
     "source": "Personal research",
     "index_baseline": 0,
-    "index_label": "Monthly salary (DKK)",
+    "index_label": "Monthly salary (NOK)",
     "baseline_description": "Approximate monthly salary before tax"
   },
   "companies": [
     {
       "company": "Example Corp",
-      "city": "Copenhagen",
+      "city": "Oslo",
       "categories": {
         "entry_level": { "index": 42000 },
         "senior": { "index": 55000 }
@@ -109,8 +109,8 @@ Start with an empty template and add companies as you research them:
 ## Usage
 
 ```bash
-python3 salary_lookup.py "Novo Nordisk"
-python3 salary_lookup.py "Ørsted" --city "Fredericia"
+python3 salary_lookup.py "Equinor"
+python3 salary_lookup.py "Telenor" --city "Fornebu"
 python3 salary_lookup.py "COWI" --json
 python3 salary_lookup.py --list-all
 python3 salary_lookup.py --validate      # pre-flight check your salary_data.json
@@ -120,5 +120,5 @@ python3 salary_lookup.py --validate      # pre-flight check your salary_data.jso
 
 - The data file (`salary_data.json`) is **excluded from git** (see `.gitignore`). Your salary data may be proprietary or confidential.
 - If the data file is missing, `salary_lookup.py` exits with a helpful error message and the `/apply` workflow skips the salary benchmark step.
-- The fuzzy matcher handles Danish company name variations: legal suffixes, Nordic characters, anglicized spellings, and partial matches.
+- The fuzzy matcher handles Norwegian company name variations: legal suffixes (AS, ASA, ANS, DA, NUF, HF, IKS), Nordic characters, anglicized spellings, and partial matches.
 - `--validate` checks your data file for malformed category values and duplicate company names and prints a report, without performing a lookup.

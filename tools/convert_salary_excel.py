@@ -38,20 +38,19 @@ except ImportError:
 
 
 # Column name patterns for auto-detection
-COMPANY_PATTERNS = {"firma", "company", "virksomhed", "employer", "arbejdsgiver"}
-CITY_PATTERNS = {"by", "city", "kommune", "location", "lokation", "sted"}
-COUNT_PATTERNS = {"antal", "count", "number", "n", "employees", "medarbejdere"}
-INDEX_PATTERNS = {"indeks", "index", "idx", "salary", "løn", "median", "average", "gennemsnit"}
+COMPANY_PATTERNS = {"firma", "company", "bedrift", "selskap", "employer", "arbeidsgiver", "virksomhet"}
+CITY_PATTERNS = {"by", "city", "kommune", "fylke", "location", "lokasjon", "sted", "poststed"}
+COUNT_PATTERNS = {"antall", "count", "number", "n", "employees", "ansatte", "medarbeidere"}
+INDEX_PATTERNS = {"indeks", "index", "idx", "salary", "lønn", "median", "average", "gjennomsnitt"}
 # "Compound" tokens: pattern words allowed to match as a substring of a larger
-# header token, for languages that glue words together (e.g. Danish "lønindeks"
-# -> løn + indeks). Languages that write headers as separate words need none.
-# Ships populated for this repo's Danish demonstration data; a fork targeting
-# another locale edits this constant.
-COMPOUND_PATTERNS = {"antal", "indeks", "løn", "gennemsnit", "medarbejdere"}
-# Identifier columns (employee id, Danish "personnummer", etc.) are never salary
-# data. They are dropped at classification so they are not mistaken for a salary
-# category. Matched as whole tokens only, like other pattern sets.
-ID_PATTERNS = {"id", "personnummer"}
+# header token, for languages that glue words together (e.g. Norwegian
+# "lønnsindeks" -> lønn + indeks). Languages that write headers as separate
+# words need none. A fork targeting another locale edits this constant.
+COMPOUND_PATTERNS = {"antall", "indeks", "lønn", "gjennomsnitt", "medarbeidere", "ansatte"}
+# Identifier columns (employee id, Norwegian "fødselsnummer"/"personnummer",
+# organisation number) are never salary data. They are dropped at classification
+# so they are not mistaken for a salary category. Matched as whole tokens only.
+ID_PATTERNS = {"id", "fødselsnummer", "personnummer", "orgnr", "organisasjonsnummer"}
 
 
 def header_matches(header, patterns):
