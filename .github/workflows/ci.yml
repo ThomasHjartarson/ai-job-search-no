@@ -48,7 +48,7 @@ jobs:
       - run: pip install pyyaml
       - run: python tools/lint_skills.py
       - name: Framework version guard (upstream template only)
-        if: github.repository == 'MadsLorentzen/ai-job-search'
+        if: github.repository == 'ThomasHjartarson/ai-job-search-no'
         run: python tools/check_framework_version.py
 
   security-guards:
@@ -79,7 +79,7 @@ jobs:
     # passes instead of hard-failing (the same graceful-skip pattern the
     # workflow uses for optional tools). Enabling Dependency graph under
     # Settings -> Advanced Security activates the real check.
-    if: github.event_name == 'pull_request' && github.repository == 'MadsLorentzen/ai-job-search'
+    if: github.event_name == 'pull_request' && github.repository == 'ThomasHjartarson/ai-job-search-no'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -139,7 +139,7 @@ jobs:
           python3 tools/verify_pdf.py cv/main_example.pdf --min-chars 100
           python3 tools/verify_pdf.py cover_letters/cover_example.pdf --min-chars 100
       - name: Assert stock PDF structure (upstream template only)
-        if: github.repository == 'MadsLorentzen/ai-job-search'
+        if: github.repository == 'ThomasHjartarson/ai-job-search-no'
         run: |
           python3 tools/verify_pdf.py cv/main_example.pdf \
             --pages 2 \
@@ -179,7 +179,7 @@ jobs:
 
   placeholder-integrity:
     name: Placeholder integrity (upstream template only)
-    if: github.repository == 'MadsLorentzen/ai-job-search'
+    if: github.repository == 'ThomasHjartarson/ai-job-search-no'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4

@@ -10,9 +10,18 @@
   <a href="https://trendshift.io/repositories/43622?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-43622" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/43622/daily" alt="MadsLorentzen%2Fai-job-search | Trendshift" width="250" height="55"/></a>
 </p>
 
-[![CI](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml/badge.svg)](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml)
+[![CI](https://github.com/ThomasHjartarson/ai-job-search-no/actions/workflows/ci.yml/badge.svg)](https://github.com/ThomasHjartarson/ai-job-search-no/actions/workflows/ci.yml)
 
 An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+
+> 🇳🇴 **Norwegian adaptation.** This is a fork of
+> [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search) with the Danish
+> job portals replaced by Norwegian ones. The framework — the `/setup` → `/scrape` → `/apply`
+> workflow, the LaTeX pipeline, the evaluation rubric — is upstream's work, unchanged in substance.
+> What is new here is Norwegian portal coverage and locale handling.
+>
+> Framework improvements belong [upstream](https://github.com/MadsLorentzen/ai-job-search), where
+> they reach every fork. Norwegian portal issues belong here.
 
 > Note: This is an independent open-source project and is not affiliated with, endorsed by, sponsored by, or maintained by Anthropic. Anthropic and Claude Code are referenced only to describe the toolchain this workflow uses.
 >
@@ -20,11 +29,15 @@ An AI-powered job application framework built on [Claude Code](https://claude.co
 
 ## Does it actually work?
 
-I'm a geophysicist by training. When my position was cut in late 2025, I built this framework to run my own job search - the same `/scrape`, `/apply`, and `/interview` workflow in this repo, used weekly, on my own career. I was upfront about it with every employer I spoke to, and instead of counting against me, it usually sparked a genuine technical conversation.
+*The following is upstream author [Mads Lorentzen](https://github.com/MadsLorentzen)'s account of
+building and using the original framework — not this fork maintainer's:*
 
-Sixty-nine tailored applications, twenty first interviews, and one signed contract later, I started as an AI engineer in June 2026. People kept asking whether this actually works. It got me hired. Now it's yours.
+> I'm a geophysicist by training. When my position was cut in late 2025, I built this framework to run my own job search - the same `/scrape`, `/apply`, and `/interview` workflow in this repo, used weekly, on my own career. I was upfront about it with every employer I spoke to, and instead of counting against me, it usually sparked a genuine technical conversation.
+>
 
-*The longer version, including the full application funnel, is on [LinkedIn](https://www.linkedin.com/in/mads-lorentzen/).*
+> Sixty-nine tailored applications, twenty first interviews, and one signed contract later, I started as an AI engineer in June 2026. People kept asking whether this actually works. It got me hired. Now it's yours.
+
+*The longer version is on [Mads' LinkedIn](https://www.linkedin.com/in/mads-lorentzen/). The Ko-fi below is his.*
 
 <p align="center">
   <i>Did this save you a Sunday of cover-letter writing? Consider a coffee.<br>
@@ -74,9 +87,12 @@ The framework encodes career guidance best practices, including structured evalu
 ### 1. Fork and clone
 
 ```bash
-gh repo fork MadsLorentzen/ai-job-search --clone
-cd ai-job-search
+gh repo fork ThomasHjartarson/ai-job-search-no --clone
+cd ai-job-search-no
 ```
+
+Outside Norway? Fork [upstream](https://github.com/MadsLorentzen/ai-job-search) instead and
+generate skills for your own market with `/add-portal`.
 
 ### 2. Install job search tools
 
@@ -309,6 +325,50 @@ NAV carries the **full advert text** for these ads, not just metadata, so `searc
 enough to draft an application. Every finn-sourced result also exposes `finn_url`, the canonical
 finn posting, for opening and applying there yourself.
 
+### Why there is no finn.no scraper
+
+**This is the most common request, so here is the reasoning up front.**
+
+[finn.no](https://www.finn.no) is Norway's largest job portal. Its `robots.txt` opens:
+
+```
+# Notice: Crawling FINN.no is prohibited unless you have written permission.
+```
+
+and the terms it cites invoke åndsverksloven, naming *"systematisk eller regelmessig bruk"* —
+systematic or regular use. There is no sanctioned automated route either: `search.rss` and the
+internal search API both return 404.
+
+So this repo does not ship a finn.no scraper, and PRs adding one will not be merged. That is not
+timidity — it is that a public tool whose documented purpose is circumventing a site's stated
+terms is a different thing from a personal script, and everyone who clones this inherits the
+consequences.
+
+**You lose less than you would think.** `nav-search` reaches finn's listings through
+[arbeidsplassen.nav.no](https://arbeidsplassen.nav.no), NAV's national job board, which
+republishes a large share of finn's ads and whose `robots.txt` permits automated access:
+
+| Search | Share of NAV results originally from finn |
+|---|---|
+| utvikler | 76% |
+| selger | 69% |
+| prosjektleder | 68% |
+| data scientist | 64% |
+| regnskap | 41% |
+| sykepleier | 4% |
+
+Coverage is strongest exactly where finn dominates — tech and commercial roles. Healthcare and
+public sector post to NAV directly, so finn barely matters there.
+
+Crucially, **NAV carries the full advert text**, not just metadata, so `search` → `detail` is
+enough for `/apply` to draft against. Every finn-sourced result also exposes `finn_url`, the
+canonical posting, so you can open and apply on finn yourself — which is a person reading a job
+ad, exactly as intended.
+
+**If you want the remainder**, finn's *Lagrede søk* (saved searches) will email you new matches.
+That is finn choosing to send you the data, with no terms problem and no markup to break. Wiring
+those alerts into `/scrape` is an open idea, not shipped.
+
 ### Job search tools
 
 The `nav-search` CLI in `.agents/skills/` demonstrates the pattern for building a job-portal integration for a specific market. If you're in a different country, run:
@@ -367,6 +427,7 @@ Thinking about a PR? Read [CONTRIBUTING.md](CONTRIBUTING.md) first - it explains
 
 ## Acknowledgements
 
+- [Mads Lorentzen](https://github.com/MadsLorentzen) for [ai-job-search](https://github.com/MadsLorentzen/ai-job-search), which this forks. Everything but the Norwegian portal skills and locale handling is his work.
 - [Mikkel Krogholm](https://github.com/mikkelkrogsholm) ([skills repo](https://github.com/mikkelkrogsholm/skills)) for the job search CLI skills
 - Built with [Claude Code](https://claude.com/claude-code) by [Anthropic](https://anthropic.com)
 

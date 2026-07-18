@@ -2,9 +2,15 @@
 
 ## Reporting a vulnerability
 
-Please report security findings privately via **[GitHub private vulnerability reporting](https://github.com/MadsLorentzen/ai-job-search/security/advisories/new)** rather than a public issue. You will get a response within a few days, credit in the fix unless you prefer otherwise, and public disclosure coordinated with the patch.
+Please report security findings privately via **[GitHub private vulnerability reporting](https://github.com/ThomasHjartarson/ai-job-search-no/security/advisories/new)** rather than a public issue. You will get a response within a few days, credit in the fix unless you prefer otherwise, and public disclosure coordinated with the patch.
 
 If the private form is unavailable, open a public issue that describes the *class* of problem without a working recipe, and note that you have details to share privately.
+
+## About this fork
+
+This is the Norwegian adaptation of [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search).
+Report issues in the Norwegian portal skills (`nav-search`, `nav-feed-sweep`) here. Issues in the
+shared framework are better reported upstream, where the fix reaches every fork including this one.
 
 ## Threat model, honestly stated
 

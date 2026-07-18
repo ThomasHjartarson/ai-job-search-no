@@ -1,6 +1,27 @@
 # Contributing
 
-Thanks for considering a contribution! This repo has a deliberate, narrow philosophy, and most declined PRs are well-executed work that simply didn't know about it. Read this first; it will save you effort and tell you where your work will land best.
+Thanks for considering a contribution!
+
+## Where your change belongs
+
+This is the **Norwegian fork** of
+[MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search).
+
+| Change | Where |
+|---|---|
+| Norwegian portal skills (`nav-search`, `nav-feed-sweep`) | **Here** |
+| Norwegian locale handling (company forms, bokmål/nynorsk, NOK) | **Here** |
+| The `/setup` → `/scrape` → `/apply` workflow, LaTeX templates, Python tools | **[Upstream](https://github.com/MadsLorentzen/ai-job-search)** |
+| Anything that helps every market, not just Norway | **[Upstream](https://github.com/MadsLorentzen/ai-job-search)** |
+
+Sending framework fixes upstream is not bureaucracy — it is how the fix reaches every fork,
+including this one, instead of stranding here as permanent divergence.
+
+**A finn.no scraper will not be merged.** See
+[Why there is no finn.no scraper](README.md#why-there-is-no-finnno-scraper) for the reasoning.
+
+The upstream policy below still governs the shared framework, and is worth reading before
+proposing a change to it. This repo has a deliberate, narrow philosophy, and most declined PRs are well-executed work that simply didn't know about it. Read this first; it will save you effort and tell you where your work will land best.
 
 ## The one rule everything follows from
 
@@ -15,7 +36,7 @@ Thanks for considering a contribution! This repo has a deliberate, narrow philos
 
 ## What gets declined
 
-- **Market- or country-specific skills and content.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). The in-tree portal skills are either country-agnostic (`linkedin-search`) or the maintainer's own demonstration instance (the Danish portals).
+- **Market- or country-specific skills and content.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). Upstream's in-tree portal skills are country-agnostic (`linkedin-search`, `freehire-search`); market-specific ones — like this fork's `nav-search` — live in forks.
 - **Personal profile data.** The template ships placeholders; your populated profile lives in your fork. CI enforces this (`placeholder-integrity`). Precedent: [#17], [#72].
 - **Alternative-harness ports and duplicate workflow sources.** The markdown specs ARE the implementation; a second copy (another agent CLI, an orchestration layer, a wrapper command) drifts from the first the moment either changes. Precedent: [#44], [#49], [#66].
 - **Speculative infrastructure.** Complexity must be argued from a problem that exists, not one that might. Precedent: [#63].
