@@ -1,0 +1,20 @@
+{
+  "name": "nav-search-cli",
+  "version": "1.0.0",
+  "description": "CLI for searching arbeidsplassen.nav.no, NAV's public Norwegian job board — no authentication, zero runtime dependencies. Republishes most finn.no ads and links back to them.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": {
+    "nav-search": "src/cli.ts"
+  },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/bun": "latest"
+  }
+}
