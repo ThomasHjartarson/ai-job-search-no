@@ -60,7 +60,11 @@ bun run .agents/skills/nav-search/cli/src/cli.ts search -q "utvikler" --county O
 ```
 
 - `--query`, `-q` `<text>` — keywords (title, skill, role). Optional.
-- `--jobage <days>` — published within N days.
+- `--jobage <days>` — published within N days. Any positive value works. NAV's own
+  `published` filter only accepts `now/d`, `now-3d` and `now-7d`, so windows up to 7 days are
+  narrowed server-side and the exact cutoff is always applied client-side against each ad's
+  date. Windows beyond 7 days are filtered purely client-side, which means more pages are
+  fetched (still capped at 10) and `meta.total` reflects NAV's pre-filter count.
 - `--page <n>` — 1-indexed page, 25 ads per page. Default 1.
 - `--limit`, `-n` `<n>` — max results. Default 25. Pages are fetched serially as needed,
   hard-capped at 10 pages so a large limit cannot become an unbounded crawl.

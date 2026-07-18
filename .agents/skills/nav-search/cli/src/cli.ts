@@ -61,7 +61,8 @@ USAGE
 
 SEARCH FLAGS
   --query, -q <text>      Keywords (title, skill, role). Optional.
-  --jobage <days>         Published within N days.
+  --jobage <days>         Published within N days. Windows over 7 days are
+                          filtered client-side (NAV only supports 3 and 7).
   --page <n>              1-indexed page (25 ads per page). Default 1.
   --limit, -n <n>         Max results to return. Default 25; pages are fetched
                           serially as needed, capped at 10 pages.

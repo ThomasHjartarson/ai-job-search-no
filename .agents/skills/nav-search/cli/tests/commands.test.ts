@@ -69,9 +69,22 @@ describe("runSearch", () => {
     const url = new URL(urls[0])
     expect(url.pathname).toBe("/stillinger")
     expect(url.searchParams.get("q")).toBe("data scientist")
-    expect(url.searchParams.get("published")).toBe("now-14d")
+    // `published` is an enum NAV's UI limits to now/d, now-3d and now-7d. A
+    // 14-day window has no server-side equivalent, so the param is omitted and
+    // the cutoff is applied client-side. Sending "now-14d" here made NAV 500.
+    // See tests/jobage.test.ts.
+    expect(url.searchParams.has("published")).toBe(false)
     // County names are uppercased and the "fylke" suffix dropped for NAV.
     expect(url.searchParams.getAll("county")).toEqual(["OSLO", "VESTLAND"])
+  })
+
+  test("sends a supported published bucket for windows NAV can express", async () => {
+    const { urls } = mockHtml(rscPage('{"totalAds":0}'))
+    captureStdout()
+
+    await runSearch(searchOpts({ jobage: 7 }))
+
+    expect(new URL(urls[0]).searchParams.get("published")).toBe("now-7d")
   })
 
   test("pages by offset, not by a size param", async () => {
