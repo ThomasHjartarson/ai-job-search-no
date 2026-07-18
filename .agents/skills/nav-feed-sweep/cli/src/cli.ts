@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
-// Self-contained CLI for searching arbeidsplassen.nav.no, NAV's public Norwegian
-// job board. No external CLI framework and zero runtime dependencies, so it runs
-// anywhere `bun` is available with nothing installed beyond the repo clone.
+// Self-contained CLI for NAV's official job-vacancy feed (pam-stilling-feed).
 //
-// NAV republishes a large share of finn.no's ads (65-76% of results on typical
-// tech/commercial queries) and links back to each finn posting, so this is the
-// main way to reach finn.no inventory through a channel that permits automation.
-// NAV's robots.txt is fully open.
+// This is the sanctioned API: free, documented, token-authenticated.
+// https://navikt.github.io/pam-stilling-feed/
+//
+// It is a chronological event feed, NOT a search index — there is no keyword
+// parameter, so filtering happens client-side after walking the feed. Use
+// nav-search for "find me X in Y"; use this for "what is new since yesterday".
 
-import { runSearch, type SearchOpts } from "./commands/search.js"
+import { runSweep, type SweepOpts } from "./commands/sweep.js"
 import { runDetail, type DetailOpts } from "./commands/detail.js"
 import { baseUrl } from "./helpers.js"
 
@@ -17,7 +17,6 @@ interface Flags {
   [k: string]: string | boolean | string[]
 }
 
-// Short-flag aliases.
 const ALIAS: Record<string, string> = { q: "query", n: "limit" }
 
 function parseFlags(argv: string[]): Flags {
@@ -31,7 +30,6 @@ function parseFlags(argv: string[]): Flags {
     const name = a.replace(/^-+/, "")
     const key = ALIAS[name] ?? name
     const next = argv[i + 1]
-    // A flag with no following value (or another flag next) is a boolean.
     let value: string | boolean = true
     if (next !== undefined && !next.startsWith("-")) {
       value = next
@@ -42,10 +40,7 @@ function parseFlags(argv: string[]): Flags {
   return flags
 }
 
-type FlagValue = string | boolean | string[] | undefined
-
-/** Split a comma-separated value ("Oslo,Vestland") into a trimmed list. */
-function commaList(raw: FlagValue): string[] {
+function commaList(raw: string | boolean | string[] | undefined): string[] {
   if (typeof raw !== "string") return []
   return raw
     .split(",")
@@ -53,39 +48,39 @@ function commaList(raw: FlagValue): string[] {
     .filter(Boolean)
 }
 
-const HELP = `nav-search — search arbeidsplassen.nav.no (NAV's Norwegian job board)
+const HELP = `nav-feed-sweep — sweep NAV's official job-vacancy feed for what's new
+
+  This is a chronological feed, not a search index. For keyword searching use
+  nav-search. Use this to see everything published in a time window.
 
 USAGE
-  bun run src/cli.ts search [-q "<søkeord>"] [filters] [--format json|table|plain]
+  bun run src/cli.ts sweep [--since <days>] [-q "<ord>"] [--municipal <steder>]
   bun run src/cli.ts detail <uuid|url> [--format json|plain]
 
-SEARCH FLAGS
-  --query, -q <text>      Keywords (title, skill, role). Optional.
-  --jobage <days>         Published within N days.
-  --page <n>              1-indexed page (25 ads per page). Default 1.
-  --limit, -n <n>         Max results to return. Default 25; pages are fetched
-                          serially as needed, capped at 10 pages.
-  --county <names>        Fylke filter, comma-separated. e.g. --county Oslo,Vestland
-  --municipal <names>     Kommune filter, comma-separated. e.g. --municipal Bergen
-  --source <names>        Keep only these NAV sources, comma-separated.
-                          FINN | IMPORTAPI | AMEDIA | DIR (--source FINN for finn.no ads only)
+SWEEP FLAGS
+  --since <days>          How far back to walk. Default 1. Always bounded — the
+                          feed reaches back to ~2019.
+  --query, -q <text>      Keep entries whose title or employer contains this.
+  --municipal <names>     Kommune filter, comma-separated (e.g. Oslo,Bergen).
+  --limit, -n <n>         Max results. Default 50.
+  --include-inactive      Also report filled/expired ads. Off by default: about a
+                          third of feed entries are INACTIVE state changes.
   --format <fmt>          json (default) | table | plain.
 
 DETAIL
-  <uuid|url>              A NAV ad uuid (a search result's id) or a full
-                          https://arbeidsplassen.nav.no/stillinger/stilling/<uuid> URL.
+  <uuid|url>              A NAV ad uuid, or any arbeidsplassen/feed URL.
+
+AUTH
+  Set NAV_FEED_TOKEN to a registered token (free — email
+  nav.team.arbeidsplassen@nav.no). Without it the public development token is
+  fetched automatically; NAV rotates that one, so a 401 means it moved.
 
 EXAMPLES
-  bun run src/cli.ts search -q "utvikler" --county Oslo --limit 10 --format table
-  bun run src/cli.ts search -q "data scientist" --jobage 14 --format table
-  bun run src/cli.ts search -q "prosjektleder" --county Vestland --source FINN --format plain
+  bun run src/cli.ts sweep --since 1 --format table
+  bun run src/cli.ts sweep --since 3 -q utvikler --municipal Oslo --format table
   bun run src/cli.ts detail 80df5041-7bb3-4ba5-87d4-c814e6770e8f --format plain
 
-NOTE
-  For FINN-sourced ads NAV stores metadata only — the posting text lives on
-  finn.no. Every such result carries a "finn_url" pointing at the original ad.
-
-Source: ${baseUrl()} (public, no API key; robots.txt permits automated access).
+Source: ${baseUrl()} (official NAV API).
 `
 
 function parseIntFlag(name: string, raw: string | boolean | string[]): number | null {
@@ -107,10 +102,10 @@ async function main(): Promise<number> {
     return cmd ? 0 : 1
   }
 
-  if (cmd === "search") {
+  if (cmd === "sweep") {
     const fmt = (flags.format as string) || "json"
 
-    for (const name of ["jobage", "page", "limit"] as const) {
+    for (const name of ["since", "limit"] as const) {
       if (flags[name] !== undefined) {
         const v = parseIntFlag(name, flags[name])
         if (v === null) return 1
@@ -118,17 +113,15 @@ async function main(): Promise<number> {
       }
     }
 
-    const opts: SearchOpts = {
+    const opts: SweepOpts = {
+      since: flags.since ? Math.max(1, parseInt(flags.since as string, 10)) : 1,
       query: typeof flags.query === "string" ? flags.query : undefined,
-      jobage: flags.jobage ? parseInt(flags.jobage as string, 10) : 9999,
-      page: flags.page ? Math.max(1, parseInt(flags.page as string, 10)) : 1,
-      limit: flags.limit ? Math.max(1, parseInt(flags.limit as string, 10)) : 25,
-      format: (["json", "table", "plain"].includes(fmt) ? fmt : "json") as SearchOpts["format"],
-      counties: commaList(flags.county),
       municipals: commaList(flags.municipal),
-      sources: commaList(flags.source).map((s) => s.toUpperCase()),
+      limit: flags.limit ? Math.max(1, parseInt(flags.limit as string, 10)) : 50,
+      format: (["json", "table", "plain"].includes(fmt) ? fmt : "json") as SweepOpts["format"],
+      includeInactive: flags["include-inactive"] === true,
     }
-    return runSearch(opts)
+    return runSweep(opts)
   }
 
   if (cmd === "detail") {

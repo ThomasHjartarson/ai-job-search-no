@@ -1,0 +1,15 @@
+{
+  "name": "nav-feed-sweep-cli",
+  "version": "1.0.0",
+  "description": "CLI for NAV's official job-vacancy feed API (pam-stilling-feed). Chronological sweep of everything new, not a keyword search — use nav-search for that. Free token, zero runtime dependencies.",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": { "nav-feed-sweep": "src/cli.ts" },
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test --timeout 30000",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": { "typescript": "^5.4.0", "@types/bun": "latest" }
+}

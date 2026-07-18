@@ -139,4 +139,15 @@ async function main(): Promise<number> {
   return 1
 }
 
-main().then((code) => process.exit(code))
+// Set exitCode rather than calling process.exit(): process.exit() discards
+// buffered stdout that has not drained, truncating large JSON output at the 64KB
+// pipe boundary. /scrape consumes this output through a pipe, so that corrupts
+// real searches.
+//
+// The trigger is process.exit() *plus more than one HTTP request in the same
+// process* — a command that fetches a token first, or pages, is affected; a
+// single-request one is not (measured: 65536 bytes vs 137910 on the same CLI,
+// with and without a preceding token fetch).
+main().then((code) => {
+  process.exitCode = code
+})
