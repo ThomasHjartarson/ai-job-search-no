@@ -12,6 +12,27 @@ describe("flag validation", () => {
       expect(result.stdout).toBe("")
       expect(JSON.parse(result.stderr).code).toBe("BAD_ARG")
     })
+
+    // Regression: parseInt used to accept "-1" and truncate "1.5" to 1, and the
+    // Math.max(1, ...) clamp then silently substituted 1 instead of erroring.
+    test(`--${name} rejects a negative value instead of silently clamping`, async () => {
+      const result = await runCLI(["search", `--${name}`, "-1"])
+      expect(result.exitCode).toBe(1)
+      expect(result.stdout).toBe("")
+      expect(JSON.parse(result.stderr).code).toBe("BAD_ARG")
+    })
+
+    test(`--${name} rejects zero`, async () => {
+      const result = await runCLI(["search", `--${name}`, "0"])
+      expect(result.exitCode).toBe(1)
+      expect(JSON.parse(result.stderr).code).toBe("BAD_ARG")
+    })
+
+    test(`--${name} rejects a fractional value`, async () => {
+      const result = await runCLI(["search", `--${name}`, "1.5"])
+      expect(result.exitCode).toBe(1)
+      expect(JSON.parse(result.stderr).code).toBe("BAD_ARG")
+    })
   }
 })
 

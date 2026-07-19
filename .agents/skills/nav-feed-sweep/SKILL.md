@@ -11,7 +11,7 @@ description: >
   nye stillinger i dag, nye stillingsannonser, siste stillinger.
 context: fork
 enabled: false  # redundant with nav-search day to day; enable for exhaustive sweeps
-allowed-tools: Bash(bun run skills/nav-feed-sweep/cli/src/cli.ts *)
+allowed-tools: Bash(bun run .agents/skills/nav-feed-sweep/cli/src/cli.ts *)
 ---
 
 # nav-feed-sweep

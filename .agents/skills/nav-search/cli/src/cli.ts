@@ -89,13 +89,21 @@ NOTE
 Source: ${baseUrl()} (public, no API key; robots.txt permits automated access).
 `
 
-function parseIntFlag(name: string, raw: string | boolean | string[]): number | null {
-  const val = parseInt(raw as string, 10)
-  if (isNaN(val)) {
-    process.stderr.write(JSON.stringify({ error: `--${name} must be a number, got "${raw}"`, code: "BAD_ARG" }) + "\n")
+// jobage/page/limit are all counts: a non-integer, zero, or negative value is a
+// mistake, not something to silently coerce. parseInt would accept "-1" and
+// truncate "1.5" to 1; Number + Number.isInteger rejects both so the caller
+// hears about it instead of getting a quietly wrong result set.
+function parseIntFlag(name: string, raw: string | boolean | string[], min = 1): number | null {
+  const num = Number(String(raw))
+  if (!Number.isInteger(num)) {
+    process.stderr.write(JSON.stringify({ error: `--${name} must be an integer, got "${raw}"`, code: "BAD_ARG" }) + "\n")
     return null
   }
-  return val
+  if (num < min) {
+    process.stderr.write(JSON.stringify({ error: `--${name} must be >= ${min}, got "${raw}"`, code: "BAD_ARG" }) + "\n")
+    return null
+  }
+  return num
 }
 
 async function main(): Promise<number> {

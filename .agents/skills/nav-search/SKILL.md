@@ -11,7 +11,7 @@ description: >
   stilling i Oslo, jobb i Bergen, utlyste stillinger.
 context: fork
 enabled: true  # set to false to keep this portal installed but have /scrape skip it
-allowed-tools: Bash(bun run skills/nav-search/cli/src/cli.ts *)
+allowed-tools: Bash(bun run .agents/skills/nav-search/cli/src/cli.ts *)
 ---
 
 # nav-search
