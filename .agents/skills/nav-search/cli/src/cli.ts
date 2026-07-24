@@ -164,6 +164,20 @@ async function main(): Promise<number> {
 // process* — a command that fetches a token first, or pages, is affected; a
 // single-request one is not (measured: 65536 bytes vs 137910 on the same CLI,
 // with and without a preceding token fetch).
-main().then((code) => {
-  process.exitCode = code
-})
+//
+// The .catch() reports an otherwise-unhandled rejection as structured JSON on
+// stderr (upstream #203); it too sets exitCode instead of process.exit() so a
+// partially-written stdout buffer still drains.
+main()
+  .then((code) => {
+    process.exitCode = code
+  })
+  .catch((e) => {
+    process.stderr.write(
+      JSON.stringify({
+        error: e instanceof Error ? e.message : String(e),
+        code: "INTERNAL_ERROR",
+      }) + "\n",
+    )
+    process.exitCode = 1
+  })
