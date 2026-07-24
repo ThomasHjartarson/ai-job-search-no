@@ -159,15 +159,15 @@ class DetectColumnTypeTests(unittest.TestCase):
 
     def test_parse_sheet_pairs_interleaved_count_index_columns_by_name(self):
         ws = FakeWorksheet([
-            ("Company", "Antal kvinder", "Antal mænd", "Kvinder indeks", "Mænd indeks"),
+            ("Company", "Antall kvinner", "Antall menn", "Kvinner indeks", "Menn indeks"),
             ("Example Corp", 15, 20, 95.0, 108.0),
         ])
 
         companies = parse_sheet(ws)
 
         categories = companies[0]["categories"]
-        self.assertEqual(categories["kvinder"], {"count": 15, "index": 95.0})
-        self.assertEqual(categories["mænd"], {"count": 20, "index": 108.0})
+        self.assertEqual(categories["kvinner"], {"count": 15, "index": 95.0})
+        self.assertEqual(categories["menn"], {"count": 20, "index": 108.0})
 
     def test_standalone_count_column_is_stored_as_count_not_index(self):
         # A count column with no matching index column (e.g. a lone total
@@ -175,14 +175,14 @@ class DetectColumnTypeTests(unittest.TestCase):
         # index, which salary_lookup would render with a bogus "vs baseline"
         # percentage. The paired category alongside it is unaffected.
         ws = FakeWorksheet([
-            ("Company", "Antal", "IT Count", "IT Index"),
+            ("Company", "Antall", "IT Count", "IT Index"),
             ("Example Corp", 250, 30, 108.5),
         ])
 
         companies = parse_sheet(ws)
 
         categories = companies[0]["categories"]
-        self.assertEqual(categories["antal"], {"count": 250})
+        self.assertEqual(categories["antall"], {"count": 250})
         self.assertEqual(categories["it"], {"count": 30, "index": 108.5})
 
     def test_parse_sheet_non_adjacent_columns_no_cross_match(self):
