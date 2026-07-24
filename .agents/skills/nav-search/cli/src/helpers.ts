@@ -55,6 +55,7 @@ export async function fetchHtml(path: string): Promise<string | null> {
           "Accept-Language": "nb,no,en;q=0.9",
         },
         redirect: "follow",
+        signal: AbortSignal.timeout(15000),
       })
     } catch (e) {
       throw new Error(

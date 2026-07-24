@@ -51,7 +51,10 @@ export async function resolveToken(): Promise<string> {
   const fromEnv = (process.env.NAV_FEED_TOKEN ?? "").trim()
   if (fromEnv) return fromEnv
 
-  const response = await fetch(`${baseUrl()}/api/publicToken`, { headers: { "User-Agent": UA } })
+  const response = await fetch(`${baseUrl()}/api/publicToken`, {
+    headers: { "User-Agent": UA },
+    signal: AbortSignal.timeout(15000),
+  })
   if (!response.ok) {
     throw new Error(
       `could not fetch NAV's public feed token (${response.status}). Set NAV_FEED_TOKEN to a registered token instead.`,
@@ -99,7 +102,7 @@ export async function fetchFeed(token: string, path: string, since?: Date): Prom
   for (let attempt = 0; attempt <= 4; attempt++) {
     let response: Response
     try {
-      response = await fetch(url, { headers, redirect: "follow" })
+      response = await fetch(url, { headers, redirect: "follow", signal: AbortSignal.timeout(15000) })
     } catch (e) {
       throw new Error(`could not reach the NAV feed (${e instanceof Error ? e.message : String(e)})`)
     }

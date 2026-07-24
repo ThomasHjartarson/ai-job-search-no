@@ -43,6 +43,7 @@ export async function runDetail(opts: DetailOpts): Promise<number> {
     const token = await resolveToken()
     const response = await fetch(`${baseUrl()}/api/v1/feedentry/${encodeURIComponent(id)}`, {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      signal: AbortSignal.timeout(15000),
     })
     if (response.status === 404) {
       writeError("job not found in the feed", "NOT_FOUND")
